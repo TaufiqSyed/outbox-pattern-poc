@@ -57,6 +57,7 @@ const run = async () => {
   await delay(5000)
   const outboxes = await fetchOutboxes()
   if (cachedOutboxes == null || !arrayEqual(outboxes, cachedOutboxes)) {
+    cachedOutboxes = outboxes
     io.emit('outboxes', outboxes)
   }
   await run()
