@@ -1,0 +1,20 @@
+doctype html
+html
+  head
+    title My Title 
+  body 
+    h1 Test Test
+    p(id="outbox-list") 
+
+    script(src="/socket.io/socket.io.js")
+    script.
+      var socket = io();
+      socket.on('outboxes', function(outboxes) {
+        var ul = document.getElementById("outbox-list");
+        ul.innerHTML = "";
+        for (var i = 0; i < outboxes.length; i++) {
+          var li = document.createElement("li");
+          li.appendChild(document.createTextNode(outboxes[i].message))
+          ul.appendChild(li);
+        }
+      });
