@@ -4,6 +4,7 @@ import express, { Request, Response, NextFunction } from 'express'
 import asyncHandler from 'express-async-handler'
 import sequelize from '../config/sequelize'
 import { Outbox } from '../models/outbox.model'
+import { io } from '../server'
 
 const router = express.Router()
 
@@ -38,6 +39,11 @@ router.post(
         await Outbox.create(newOutboxCreationAttributes)
         res.status(201).send(`Created user with id ${newUser.id}`)
       })
+      // Polling the outbox table every 5s
+
+      const outboxes = await Outbox.findAll()
+
+      io.emit('outboxes', outboxes)
     } catch (err) {
       res.status(400).send('Failed to create user')
     }

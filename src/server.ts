@@ -28,7 +28,7 @@ const server = http.createServer(app)
 /** Listen on provided port, on all network interfaces. */
 server.listen(port)
 
-const io = new socketio.Server(server)
+export const io = new socketio.Server(server)
 
 /** Event listener for HTTP server "listening" event. */
 server.on('listening', () => {
@@ -43,26 +43,12 @@ server.on('listening', () => {
   console.log(`Listening on port:: http://localhost:${port}/`)
 })
 
-const fetchOutboxes = async (): Promise<Outbox[]> => await Outbox.findAll()
-
 async function delay(ms: number) {
   return await new Promise((resolve) => setTimeout(resolve, ms))
 }
 
 // To prevent re-renders when no update
 let cachedOutboxes: Outbox[]
-
-// Polling the outbox table every 5s
-const run = async () => {
-  await delay(5000)
-  const outboxes = await fetchOutboxes()
-  if (cachedOutboxes == null || !arrayEqual(outboxes, cachedOutboxes)) {
-    cachedOutboxes = outboxes
-    io.emit('outboxes', outboxes)
-  }
-  await run()
-}
-run()
 
 io.on('connection', function (socket) {
   console.log('client connected')
